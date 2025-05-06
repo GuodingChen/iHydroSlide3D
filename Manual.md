@@ -1,7 +1,13 @@
-# PHyL v1.0
-#### What is PHyL v1.0?
+# iHydroSlide3D 
+#### What is iHydroSlide3D software?
 
-PHyL is an open-source, **p**arallelized, and modular modeling software for regional **hy**drologic processes and **l**andslides simulation and prediction. The PHyL mainly includes the following modules: (i) a distributed hydrological model (CREST); (ii) a regional 3D slope stability model; and (iii) a soil moisture downscaling (SMD) method. Parallel computational technique is applied for both hydrological and slope-stability modeling modules, which is further seamlessly coupled by the SMD method. An advanced storage method, visualization, and validation processes are designed to improve the post-processing of the simulation results. PHyL is therefore an advanced and user-friendly tool for regional flood-landslide disaster forecasting.
+iHydroSlide3D v1.1 is an open-source, parallelized, and modular modeling software for regional hydrologic processes and landslides simulation and prediction. The iHydroSlide3D mainly includes the following modules: (i) a distributed hydrological model (CREST); (ii) a regional 3D slope stability model; and (iii) a soil moisture downscaling (SMD) method. Parallel computational technique is applied for both hydrological and slope-stability modeling modules, which is further seamlessly coupled by the SMD method. An advanced storage method, visualization, and validation processes are designed to improve the post-processing of the simulation results. The iHydroSlide3D is an advanced and user-friendly tool for regional flood-landslide disaster forecasting. 
+#### Version 
+
+Current version: v1.1
+
+Note:  *iHydroSlide3D v1.1* is functionally identical to *PHyL v1.0* (Chen et al., 2024), which was developed as an enhanced version of *iHydroSlide3D v1.0*, primarily improving high-performance computing (HPC) capabilities. Although *PHyL v1.0* was publicly released, we have decided to discontinue that name. All future updates and releases will continue under the name *iHydroSlide3D*, which is already well established and widely recognized in the open-source community. 
+
 
 #### Main characteristics
 
@@ -12,7 +18,7 @@ PHyL is an open-source, **p**arallelized, and modular modeling software for regi
 
 #### Basic information
 
-- Software: PHyL v1.0
+- Software: iHydroSlide3D
 
 - Languages: Fortran, Python, and CMake
 
@@ -28,21 +34,21 @@ PHyL is an open-source, **p**arallelized, and modular modeling software for regi
 - HDF5$\geq$1.10.*
 - Python$\geq$3.8
 
-Note: the PHyL is also expected to be compiled and performed earlier versions of the above environments. The versions are recommended to avoid unforeseen errors.
+Note: the iHydroSlide3D is also expected to be compiled and performed earlier versions of the above environments. The versions are recommended to avoid unforeseen errors.
 
 #### Hardware requirements
 
 - RAM$\geq$3 G
 - Number of CPU cores$\geq$2
 
-PHyL can run on most current computer equipment, from personal computers to enterprise-class high-performance computers (HPC).
+iHydroSlide3D can run on most current computer equipment, from personal computers to enterprise-class high-performance computers (HPC).
 
 #### Overview of the file structure
 
 The following file tree includes a detailed description:
 
 ```
-📦PHyL_v1.0
+📦iHydroSlide3D_v1.0
  ┣ 📂Build (Folder used to store CMake configuring files)
  ┣ 📂DownscalingBasicData (Basic inputs for the soil downsacling module)
  ┃ ┣ 📜TWI_coarse.asc (Topographic wetness index with coarse resolution)
@@ -56,7 +62,7 @@ The following file tree includes a detailed description:
  ┃ ┣ 📜FDR.asc (Flow direction)
  ┃ ┣ 📜Mask.asc (Computational pixels within the basin)
  ┃ ┗ 📜Stream.asc (River channel pixels)
- ┣ 📂ICS (Initial conditions setup for PHyL)
+ ┣ 📂ICS (Initial conditions setup for iHydroSlide3D)
  ┃ ┗ 📋InitialConditions.txt
  ┣ 📂LandslideBasics (Basic inputs for the landslide module)
  ┃ ┣ 📜DEM_fine.asc (digital elevation model with fine resolution)
@@ -72,7 +78,7 @@ The following file tree includes a detailed description:
  ┃ ┣ 📜pet2012062702.asc
  ┃ ┣ 📜pet2012062703.asc
  ┃ ┗ 📜pet2012062704.asc
- ┣ 📂Params (Modeling paramters in PHyL)
+ ┣ 📂Params (Modeling paramters in iHydroSlide3D)
  ┃ ┣ 📜IM.asc (Percentage impervious area)
  ┃ ┣ 📜Ksat.asc (Soil saturate hydraulic conductivity)
  ┃ ┣ 📋Parameters_hydro.txt (Parameters setups for hydrological module)
@@ -117,7 +123,7 @@ The following file tree includes a detailed description:
  ┣ 📋Control.Project (Basic information for simulation)
 ```
 
-#### Parameters in PHyL
+#### Parameters in iHydroSlide3D
 
 | Parameters    | Description                                                  | Unit            | Ranges      |
 | :------------ | :----------------------------------------------------------- | --------------- | ----------- |
@@ -152,7 +158,7 @@ The following file tree includes a detailed description:
 
 Note: the parameters without ranges are determined by inputs (e.g., soil texture or field data) or user-defined.
 
-#### ✅ Compile the PHyL
+#### ✅ Compile the iHydroSlide3D
 
 Enter the folder and open the terminal:
 
@@ -172,34 +178,34 @@ You'll get the full file directory when you unzip the file (like the file tree s
 https://drive.google.com/file/d/1QZyMOmp6yVYDrA0xGOr2tlQss74yPhPO/view?usp=sharing
 ```
 
-Now you are ready to work with the PHyL. Enter the "Build" directory:
+Now you are ready to work with the iHydroSlide3D. Enter the "Build" directory:
 
 ```
 cd Build
 ```
 
-Configure the PHyL:
+Configure the iHydroSlide3D:
 
 ```
 cmake ..
 ```
 
-Build to the target PHyL:
+Build to the target iHydroSlide3D:
 
 ```
 make
 ```
 
-If all goes well, you will easily get the executable: PHyL_v1. Users can also specify the build type by editing the CMakeLists.txt:
+If all goes well, you will easily get the executable: iHydroSlide3D. Users can also specify the build type by editing the CMakeLists.txt:
 
 ```cmake
 # SET(CMAKE_BUILD_TYPE "Debug")
 SET(CMAKE_BUILD_TYPE "Release")
 ```
 
-#### ✅ Run the PHyL for a real project
+#### ✅ Run the iHydroSlide3D for a real project
 
-Users are recommended to prepare all the file as in our benchmark case. In order to facilitate our explanation of the use of the PHyL, we start from our own river basin, Yuehe project.
+Users are recommended to prepare all the file as in our benchmark case. In order to facilitate our explanation of the use of the iHydroSlide3D, we start from our own river basin, Yuehe project.
 
 ##### ➡️ Basic setup for "📋Control.Project"
 
@@ -460,10 +466,10 @@ NLandThread = 6
 
 For the efficiency, $N_{sub}\geq N_{Hthread}$ and $N_{tile}\geq N_{Lthread}$ are recommended. In addition, $N_{Hthread}$ and $N_{Lthread}$ cannot exceed the total number of cores of the hardware. 
 
-##### ➡️ Run the PHyL
+##### ➡️ Run the iHydroSlide3D
 
 ```
-./PHyL_v1
+./iHydroSlide3D
 ```
 
 #### ✅ Calibration
@@ -567,7 +573,7 @@ make
 Then you will find the executable file along with the `CMakeLists.txt`. You can simply run the model by:
 
 ```
-./PHyL
+./iHydroSlide3D
 ```
 
 Or you can submit your job using slurm workload manager with a `sbatch` command:
@@ -580,18 +586,20 @@ Finally, check the simulation results in the results directory. In addition, you
 
 #### ✅ Contacts
 
-➡️ Guoding Chen ([cgdwork@hhu.edu.cn](mailto:cgdwork@hhu.edu.cn))
-
-➡️ Ke Zhang ([kzhang@hhu.edu.cn](mailto:kzhang@hhu.edu.cn))
+➡️ Guoding Chen ([guoding.chen94@gmail.com](mailto:guoding.chen94@gmail.com))
 
 #### ✅ Related papers:
 
-Chen G, Zhang K, Wang S, et al. iHydroSlide3D v1. 0: an advanced hydrological-geotechnical model for hydrological simulation and three-dimensional landslide prediction[J]. Geoscientific Model Development Discussions, 2021: 1-35.
+Chen G, Zhang K, Wang S, et al. iHydroSlide3D v1. 0: an advanced hydrological–geotechnical model for hydrological simulation and three-dimensional landslide prediction[J]. Geoscientific Model Development, 2023, 16(10): 2915-2937.
+
+Chen G, Zhang K, Wang S, et al. A prototype adaptive mesh generator for enhancing computational efficiency and accuracy in physically-based modeling of flood-landslide hazards[J]. Environmental Modelling & Software, 2025, 189: 106458.
+
+Chen G, Zhang K, Li Y, et al. Empowering a coupled hydrological-geotechnical model to simulate long-term vegetation dynamics and their impact on catchment-scale flood and landslide hazards[J]. Journal of Hydrology, 2025, 658: 133225.
+
+Chen G, Zhang K, Wang S, et al. A prototype adaptive mesh generator for enhancing computational efficiency and accuracy in physically-based modeling of flood-landslide hazards[J]. Environmental Modelling & Software, 2025, 189: 106458.
 
 Zhang, K., Xue, X., Hong, Y., Gourley, J. J., Lu, N., Wan, Z., Hong, Z., and Wooten, R.: iCRESTRIGRS: A coupled modeling system for cascading Flood–Landslide disaster forecasting, Hydrology and Earth System Sciences, 20, 5035–5048, 10.5194/hess-20-5035-2016, 2016.
 
 Wang, S., Zhang, K., van Beek, L. P. H., Tian, X., and Bogaard, T. A.: Physically-based landslide prediction over a large region: Scaling low-resolution hydrological model results for high-resolution slope stability assessment, Environmental Modelling & Software, 124, 104607, 10.1016/j.envsoft.2019.104607, 2020.
 
-Zhang, Y., Schaap, M. G., and Zha, Y.: A High-Resolution Global Map of Soil Hydraulic Properties Produced by a Hierarchical Parameterization of a Physically Based Water Retention Model, Water Resources Research, 54, 9774–9790, 10.1029/2018WR023539, 2018.
-
-Mergili, M., Marchesini, I., Alvioli, M., Metz, M., Schneider-Muntau, B., Rossi, M., and Guzzetti, F.: A strategy for GIS-Based 3-D slope stability modelling over large areas, Geoscientific Model Development, 7, 2969–2982, 10.5194/gmd-7-2969-2014, 2014a.		
+Mergili, M., Marchesini, I., Alvioli, M., Metz, M., Schneider-Muntau, B., Rossi, M., and Guzzetti, F.: A strategy for GIS-Based 3-D slope stability modelling over large areas, Geoscientific Model Development, 7, 2969–2982, 10.5194/gmd-7-2969-2014, 2014a. 		

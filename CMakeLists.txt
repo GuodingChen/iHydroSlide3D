@@ -5,7 +5,7 @@ SET(CMAKE_Fortran_COMPILER "/opt/homebrew/bin/gfortran")
 
 enable_language(Fortran)
 
-project(P_HyLand Fortran)
+project(iHydroSlide3D_v1.1 Fortran)
 
 
 # SET(CMAKE_BUILD_TYPE "Debug")
@@ -74,6 +74,6 @@ include_directories("${HDF5_INCLUDE_DIRS}")
 
 file(GLOB_RECURSE SRCS RELATIVE ${PROJECT_SOURCE_DIR} src/*)
 
-add_executable(PHyL_v1 ${SRCS})
+add_executable(iHydroSlide3D ${SRCS})
 
-target_link_libraries(PHyL_v1 ${HDF5_LIBRARIES})
+target_link_libraries(iHydroSlide3D ${HDF5_LIBRARIES})

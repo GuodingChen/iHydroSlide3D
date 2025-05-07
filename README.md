@@ -12,12 +12,8 @@ Note:  *iHydroSlide3D v1.1* is functionally identical to *PHyL v1.0* (Chen et al
 If you are a git user, you can install the PHyL and keep up to date by cloning the repo:
 
 ```
-git clone https://github.com/GuodingChen/PHyL_v1.0.git
+git clone https://github.com/GuodingChen/iHydroSlide3D.git
 ```
-
-##### ➡️ Install manually
-
-Download using the [GitHub .zip download](https://github.com/GuodingChen/PHyL_v1.0/archive/refs/tags/v1.0.zip) option and unzip them.
 
 #### ✅ Use the iHydroSlide3D
 

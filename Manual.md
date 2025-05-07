@@ -24,7 +24,7 @@ Note:  *iHydroSlide3D v1.1* is functionally identical to *PHyL v1.0* (Chen et al
 
 - Operating systems supported: Linux, macOS, and Windows
 
-- Availability: https://github.com/GuodingChen/PHyL_v1.0.git
+- Availability: https://github.com/GuodingChen/iHydroSlide3D.git
 
 #### Software (or environment) requirements
 
@@ -163,7 +163,7 @@ Note: the parameters without ranges are determined by inputs (e.g., soil texture
 Enter the folder and open the terminal:
 
 ```
-git clone https://github.com/GuodingChen/PHyL_v1.0.git
+git clone https://github.com/GuodingChen/iHydroSlide3D.git
 ```
 
 Then you'll notice that there are still several missing input folders because the benchmark input was compressed via the link:

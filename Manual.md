@@ -130,7 +130,7 @@ The following file tree includes a detailed description:
 | $K_{sat}$     | Soil  saturated hydraulic conductivity                       | $\rm{mm/h}$     | /           |
 | $WM$          | Soil water  storage capacity                                 | $\rm{mm}$       | /           |
 | $B$           | The exponent  of the variable infiltration curve             | -               | [0.05, 1.5] |
-| $IM$          | Impervious  area ratio                                       | -               | /           |
+| $IM$          | Impervious  area ratio                                       | -               | [0,1]       |
 | $coeM$        | The overland  runoff velocity coefficient                    | -               | [1, 150]    |
 | $expM$        | The overland  flow speed exponent                            | -               | [0.1, 0.55] |
 | $coeR$        | The flow  speed ratio of channel to overland                 | -               | [1, 3]      |

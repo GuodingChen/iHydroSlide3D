@@ -1,10 +1,12 @@
 module CREST_Project
     implicit none
-    character(len=14), parameter:: g_CREST_Version = "V1.0"
+    character(len=14), parameter:: g_CREST_Version = "V1.1"
     character(len=19) :: g_strD
     character(len = 20) :: g_CS
     character(len=200):: g_ProjectName,g_ProjectWS
     character(len=200):: g_PrjNP
+    character(len=256) :: PrjFileName
+    integer :: CommandLine_NumArgs
     integer :: g_CREST_LogFileID
     character(len=1) :: g_TimeMark !y(year);m(month);d(day);h(hour);u(minute);s(second)
     integer :: g_TimeStep

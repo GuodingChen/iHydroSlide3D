@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.23)
 # please edit the compiler path for your own
 SET(CMAKE_Fortran_COMPILER "/opt/homebrew/bin/gfortran")
 
+
 enable_language(Fortran)
 
 project(iHydroSlide3D_v1.1 Fortran)

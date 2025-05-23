@@ -47,20 +47,41 @@ program CREST_Main
     INTEGER :: IBDT(8),IEDT(8)
     integer :: I
     logical :: bIsError, ControlFile_Exist
+    integer :: LenPrjFileName
 
-    ! read the control file that named as "Control.Project"
-    g_PrjNP = trim("Control.Project")
 
-    inquire(file = trim(g_PrjNP), exist = ControlFile_Exist)
+    ! Get the number of command-line arguments
+    CommandLine_NumArgs = command_argument_count()
 
-    if (ControlFile_Exist .eqv. .false.) then
-        write(*,*) "Can't find your Contorl file!"
-        stop
+    ! Check if the project file name is provided
+    if (CommandLine_NumArgs < 1) then
+        print *, 'Please specify the project control file-->Usage: ./iHydroSlide3D <inputfile.prj>'
+        stop 1
+    end if
+
+    ! Read the first command-line argument
+    call get_command_argument(1, PrjFileName)
+    
+    g_PrjNP = trim(PrjFileName)
+    
+    inquire(file = g_PrjNP, exist=ControlFile_Exist)
+
+    if (.not. ControlFile_Exist) then
+        print *, 'Error: project control file does not exist -', g_PrjNP
+        stop 1
+    end if
+
+    ! Trim and check the extension
+    LenPrjFileName = len_trim(PrjFileName)
+
+    if (LenPrjFileName < 4 .or. trim(adjustl(PrjFileName(LenPrjFileName-3:LenPrjFileName))) /= '.prj') then
+        print *, 'Error: Input file must have a .prj extension.'
+        stop 1
     end if
 
     write(*,*)
-    write(*,"(25X,A)") "PHyL_v1.0"
-    write(*,"(1X,A)") "A massively parallel coupled hydrological-geotechnical framework"
+    write(*,"(25X,A)") "iHydroSlide3D "
+    write(*,"(1X,A)") "A integrated hydrological processes and 3D slope stability modeling framework"
     write(*,"(25X,'Version ',A)") g_CREST_Version
 
     call UtiGetAndDisplayBeginTime(IBDT)
@@ -72,11 +93,11 @@ program CREST_Main
     call XXWGetFreeFile(g_CREST_LogFileID)
 
     open(g_CREST_LogFileID,file &
-            = "logs//"//"PHyL_v1.0-"//trim(g_strD)//".log",form='formatted')
+            = "logs//"//"iHydroSlide3D-"//trim(g_strD)//".log",form='formatted')
 
-    write(g_CREST_LogFileID,"(25X,A)") "PHyL_v1.0"
-    write(g_CREST_LogFileID,"(1X,A)") "A massively parallel coupled &
-            hydrological-geotechnical framework"
+    write(g_CREST_LogFileID,"(25X,A)") "iHydroSlide3D"
+    write(g_CREST_LogFileID,"(1X,A)") "A integrated hydrological processes and &
+            3D slope stability modeling framework"
     write(g_CREST_LogFileID,"(25X,'Version ',A)") g_CREST_Version
 
     !Get the begin time and then display on Screen
@@ -136,7 +157,7 @@ program CREST_Main
     if(bIsError .eqv. .true.)then
         stop
     end if
-
+    
     write(*,*)
     write(g_CREST_LogFileID,*)
 

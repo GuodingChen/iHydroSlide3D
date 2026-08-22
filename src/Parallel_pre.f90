@@ -1,12 +1,12 @@
 ! Created by Guoding Chen on 2022/8/7.
 
 subroutine Parallel_hydro_pre()
-
+    
     use CREST_Project
     use CREST_Basic
-
+    
     implicit none
-    integer :: i, j, ii, jj, i_next, j_next,  NextChannel_index, NextChannel_index_i
+    integer :: i, j, ii, jj, i_next, j_next,  NextChannel_index
     integer :: channel_count, i_basin, i_channel_pixel, j_channel_pixel
     integer :: FAC_divide
     integer :: FAC_Subbasin_outlet, Index_Subbasin_outlet, outlet_index
@@ -16,7 +16,7 @@ subroutine Parallel_hydro_pre()
     integer, allocatable :: Channel_FAC(:), Residual_Channel_FAC(:)
     integer,allocatable :: g_FDR_forSub(:,:), g_SubMask(:,:)
     ! get the cell number of stream first, and then set the RAM
-    write(*,"(2X,A)")  "start parallel preprocessing"
+    write(*,'(A)') 'Start parallel preprocessing...'
     Npixel_channel = count(g_Stream == 1)
 
 
@@ -30,7 +30,7 @@ subroutine Parallel_hydro_pre()
     allocate(g_FDR_forSub(0:g_NCols-1,0:g_NRows-1))
     allocate(g_SubMask(0:g_NCols-1,0:g_NRows-1))
     allocate(Subbasin_assemble(N_Subbasin, 0:g_NCols-1, 0:g_NRows-1))
-
+    
     g_FDR_forSub = g_FDR
     g_SubMask = g_Mask
 
@@ -165,7 +165,7 @@ subroutine Parallel_hydro_pre()
         Residual_Channel_FAC = 0
 
         Subbasin_assemble(i_basin, :, :) = g_SubMask
-        write(*,"(2X,A)")  "Generating Subbasin_#"//adjustl(i_basin_str)//"......done"
+        write(*,'(A)') '    -> Generating Subbasin_#'//adjustl(i_basin_str)//'...... done'
     end do
     ! creat the last subbasin using the default outlet (g_tOutlet%Row, g_tOutlet%Col)
 
@@ -181,8 +181,9 @@ subroutine Parallel_hydro_pre()
             g_XLLCorner,g_YLLCorner, g_CellSize, g_NoData_Value, &
             bIsError,g_BasicFormat)
     Subbasin_assemble(N_Subbasin, :, :) = g_SubMask
-    write(*,"(2X,A)")  "Generating Subbasin_#"//adjustl(i_basin_str)//"......done"
-    write(*,"(2X,A)")  "All Subbasins have been generated."
+    write(*,'(A)') '    -> Generating Subbasin_#'//adjustl(i_basin_str)//'...... done'
+    write(*,'(A)') '    -> All Subbasins have been generated'
+    
     !write(*,*) Channel_connect
     deallocate(Channel_FAC)
     deallocate(Residual_Channel_FAC)

@@ -17,14 +17,13 @@ subroutine Landslide_module()
     integer, allocatable :: ellipse_i(:), ellipse_j(:)
     integer, allocatable :: ValidPixel_matrix_tile(:,:)
     integer, allocatable :: ValidPixel_matrix_ResiduleTile(:,:)
+
+    double precision :: slope_center, aspect_center, z_center, project_length
     double precision :: a_e, a_e_pre, b_e, c_e
-    integer :: Primary_Window
-    double precision, allocatable :: Primary_SlopeWindow(:,:)
-    double precision, allocatable :: Primary_AspectWindow(:,:)
     double precision :: main_slope, main_aspect
     double precision :: LandTime_start, LandTime_end
     ! create a temporary matrix (should contain this ellipse)
-    ! use the window extend value to realize this idea
+    ! use the window extend value to realize this
     double precision :: x_single_all(window_extend*2+1, window_extend*2+1)
     double precision :: y_single_all(window_extend*2+1, window_extend*2+1)
     double precision :: z_single_all(window_extend*2+1, window_extend*2+1)
@@ -33,14 +32,12 @@ subroutine Landslide_module()
     double precision :: aspect_single_all(window_extend*2+1, window_extend*2+1)
 
     double precision :: all_x_transition(window_extend*2+1, window_extend*2+1)
-    double precision :: all_x_ellipsoid(window_extend*2+1, window_extend*2+1)
     double precision :: all_y_transition(window_extend*2+1, window_extend*2+1)
     double precision :: judge_location(window_extend*2+1, window_extend*2+1)
 
     double precision :: z_grid, x_transition, y_transition
     double precision :: slope_InEllipse, aspect_InEllipse
-    double precision :: Delta_x_ellipsoid, z_ellipsoid_ForDEM
-    double precision :: x_ellipsoid, y_ellipsoid, z_ellipsoid
+    double precision :: x_ellipsoid, y_ellipsoid, z_ellipsoid, z_grid_InSlip
     double precision, allocatable :: D_raster(:), SM_InEllipse(:), z_ellipsoid_In(:)
     double precision :: FS_3D, volumn_sum, area_sum
     ! the tiles include the all tiles in ValidPixel_matrix and the final one
@@ -57,10 +54,10 @@ subroutine Landslide_module()
     !-------------landslide parallel region start-----------------
 
     !$OMP PARALLEL SHARED(ValidPixel_matrix, ValidPixel_matrix_residual,total_tile_number,&
-    !$OMP&  ellipsoid_number, Npixel_tile, Npixel_residual, CellSize_LandInM, &
+    !$OMP&  ellipsoid_number, Npixel_tile, Npixel_residual, &
     !$OMP&  min_ae, max_ae, min_be, max_be, min_ce, max_ce, window_extend, &
     !$OMP&  x_all, y_all, g_DEM_fine, g_slope_fine, g_aspect_fine, g_soil, g_SM_fine, &
-    !$OMP&  g_NCols, g_NRows, g_NRows_Land, g_NCols_Land,g_CellSize_Land, g_yllCorner, g_CellSize, &
+    !$OMP&  g_NCols, g_NCols_Land,g_CellSize_Land, g_yllCorner, g_CellSize, &
     !$OMP&  g_xllCorner_Land, g_yllCorner_Land, g_xllCorner, g_NoData_Value, &
     !$OMP&  g_cal_count, g_unstable_count, g_failure_volume, g_failure_area, &
     !$OMP&  g_FS_3D, c_e) DEFAULT(PRIVATE)
@@ -68,14 +65,13 @@ subroutine Landslide_module()
     do i_tile = 1, (total_tile_number + 1)
 !        print *, i_tile
 !        print '("Thread: ", i0)', omp_get_thread_num()
-        
         if (i_tile <= total_tile_number) then
             ValidPixel_matrix_tile = ValidPixel_matrix(i_tile,:,:)
         else
             ValidPixel_matrix_ResiduleTile = ValidPixel_matrix_residual
         end if
 
-        
+
         do i_ellipsoid = 1, ellipsoid_number
 
             ! get the random center in tile
@@ -102,7 +98,7 @@ subroutine Landslide_module()
 
 
             ! get the random length and width of ellipsoid
-            call random_uniform_float(min_ae, max_ae, a_e)
+            call random_uniform_float(min_ae, max_ae, a_e_pre)
             call random_uniform_float(min_be, max_be, b_e)
             call random_uniform_float(min_ce, max_ce, c_e)
 
@@ -121,50 +117,18 @@ subroutine Landslide_module()
             ! locate to ellipse center
             x_center = x_all(j,i)
             y_center = y_all(j,i)
-            
-            
-            ! get the main slope and aspect for tested landslide
+            z_center = g_DEM_fine(j,i)
+
             ! unit: degree
-            ! roughly estimated in the initial matrix
-            if (a_e >= b_e) then
-                Primary_Window = NINT(a_e / CellSize_LandInM)
-            else
-                Primary_Window = NINT(b_e / CellSize_LandInM)
-            end if 
-            
+            slope_center = g_slope_fine(j,i)
+            aspect_center = g_aspect_fine(j,i)
 
-            allocate(Primary_SlopeWindow(2 * Primary_Window + 1, 2 * Primary_Window + 1))
-            allocate(Primary_AspectWindow(2 * Primary_Window + 1, 2 * Primary_Window + 1))
 
-            ! initial the Primary slope and aspect
-            Primary_SlopeWindow = g_NoData_Value
-            Primary_AspectWindow = g_NoData_Value
-            
-            ! get the value from input datasets
-            Primary_SlopeWindow = g_slope_fine((j-Primary_Window) : (j+Primary_Window),&
-                    (i-Primary_Window) : (i+Primary_Window))
-           
-            Primary_AspectWindow = g_aspect_fine((j-Primary_Window) : (j+Primary_Window),&
-                    (i-Primary_Window) : (i+Primary_Window))
-            ! calculate the average value
-            main_slope = SUM(Primary_SlopeWindow) / ( (2 * Primary_Window + 1) ** 2 )
-
-            main_aspect = SUM(Primary_AspectWindow) / ( (2 * Primary_Window + 1) ** 2 )
-            
-            deallocate(Primary_SlopeWindow)
-            deallocate(Primary_AspectWindow)
-            
-            ! adjust the main aspect due to the Matrix transpose
-            ! All the key calculations are based on transposed matrices
-            ! Matrix transpose does not affect slope, but affects aspect.
-            if (main_aspect  <= 270) then
-                main_aspect  = 270 - main_aspect 
-            else
-                main_aspect  = 630 - main_aspect 
-            end if
+            ! get the  project_length: m
+            project_length = a_e_pre * COSD(slope_center)
 
             ! get the soil type from the USDA soil code
-            iLoc_coarse = NINT( g_NRows - (((g_NRows_Land-i-1) * &
+            iLoc_coarse = NINT( g_NCols - (((g_NCols_Land-i-1) * &
                     g_CellSize_Land + g_yllCorner_Land) &
                     - g_yllCorner) / g_CellSize - 1)
 
@@ -172,8 +136,8 @@ subroutine Landslide_module()
                     g_xllCorner_Land - g_xllCorner) &
                     / g_CellSize - 1)
 
-
             SOIL_CODE = g_soil(jLoc_coarse, iLoc_coarse)
+
 
 
             ! invalid soil code
@@ -194,7 +158,7 @@ subroutine Landslide_module()
 
             x_single_all = x_all((j-window_extend) : (j+window_extend),&
                     (i-window_extend) : (i+window_extend))
-        
+
             y_single_all = y_all((j-window_extend) : (j+window_extend),&
                     (i-window_extend) : (i+window_extend))
 
@@ -207,27 +171,24 @@ subroutine Landslide_module()
             aspect_single_all = g_aspect_fine((j-window_extend) : (j+window_extend),&
                     (i-window_extend) : (i+window_extend))
 
-            ! The x-axis and y-axis are determined by x_all and y_all
-            ! The positive direction of the x-axis corresponds to 90 degrees 
-            ! of the aspect in GIS system    
-            ! transfer the coordinate from (x,y) to landslide coordinate with center
-            ! positive x ---->   a_e
-            ! the angle used for transition is (aspect_transpose - 90) (degree)
 
-            all_x_transition = (x_single_all-x_center) * COSD(main_aspect-90) &
-                            + (y_single_all-y_center) * SIND(main_aspect-90)
+            all_x_transition = (x_single_all-x_center) * COSD(aspect_center) &
+                            + (y_single_all-y_center) * SIND(aspect_center)
 
-            all_y_transition = (y_single_all-y_center) * COSD(main_aspect-90) &
-                            - (x_single_all-x_center) * SIND(main_aspect-90)
-            all_x_ellipsoid = all_x_transition / COSD(main_slope)
+            all_y_transition = (y_single_all-y_center) * COSD(aspect_center) &
+                            - (x_single_all-x_center) * SIND(aspect_center)
+
             !------find the involved ellipse---------
             ! jugge_location is the index in small single region which can
             ! include a single ellipse
-            judge_location = all_x_ellipsoid ** 2 / (a_e ** 2) + &
+            judge_location = all_x_transition ** 2 / (project_length ** 2) + &
                             all_y_transition ** 2 / (b_e ** 2)
             Npixel_ellipse = count(judge_location<1)
 
-            
+            main_slope = SUM(slope_single_all, MASK = judge_location<1) / Npixel_ellipse
+            main_aspect = SUM(aspect_single_all, MASK = judge_location<1) / Npixel_ellipse
+            a_e = project_length/COSD(main_slope)
+
             if (MINVAL(SM_fine_single, MASK = judge_location<1) < 0) then
                 ! this means the ellipse is invalid
                 cycle
@@ -272,7 +233,7 @@ subroutine Landslide_module()
 
 
                     ! calculate the coordinate in ellipsoid system
-                    x_ellipsoid = all_x_ellipsoid(j_window, i_window)
+                    x_ellipsoid = x_transition / COSD(main_slope)
                     y_ellipsoid = y_transition
                     ! error check
                     if (x_ellipsoid**2/a_e**2+y_ellipsoid**2/b_e**2 - 1 > 0.01) then
@@ -285,31 +246,22 @@ subroutine Landslide_module()
                             (x_ellipsoid**2/a_e**2+y_ellipsoid**2/b_e**2-1)))&
                             /(2*(1/a_e**2+1/(c_e**2*(TAND(main_slope))**2))) &
                             / TAND(main_slope)
-                    
-                    ! Fitting ellipsoid coordinate into GIS systerm 
-                    Delta_x_ellipsoid = (-2*x_ellipsoid/(a_e**2) + SQRT((2*x_ellipsoid/(a_e**2))&
-                            **2-4*(1/a_e**2+1/(c_e**2*(TAND(main_slope))**2))*&
-                            (x_ellipsoid**2/a_e**2+y_ellipsoid**2/b_e**2-1)))&
-                            /(2*(1/a_e**2+1/(c_e**2*(TAND(main_slope))**2))) &
-                            / TAND(main_slope)
 
-                    z_ellipsoid_ForDEM = Delta_x_ellipsoid / SIND(main_slope)
 
                     z_ellipsoid_In(count_ellipse) = z_ellipsoid
-                    
+                    z_grid_InSlip = z_center + (z_ellipsoid - x_transition &
+                                    * SIND(main_slope)) / COSD(main_slope)
 
-                    z_single_all(j_window, i_window) = z_single_all(j_window, i_window) &
-                                                     - z_ellipsoid_ForDEM
+                    z_single_all(j_window, i_window) = z_grid_InSlip
 
-                    D_raster(count_ellipse) = z_grid - z_single_all(j_window, i_window)
+                    D_raster(count_ellipse) = z_grid - z_grid_InSlip
                     SM_InEllipse(count_ellipse) = SM_fine_single(j_window, i_window)
 
                     count_ellipse = count_ellipse + 1
-                    
-                 
+
                 end do
-            end do   
-            
+            end do
+
             ! -------------------------3D stability loop-------------------
 
 !            write (*,*) "z_ellipsoid",z_ellipsoid
@@ -344,30 +296,28 @@ subroutine Landslide_module()
                     end if
 
                 end if
-                ! compare the previous FS and new FS for pixel
-                if (g_FS_3D(j_LandMap, i_LandMap) == g_NoData_Value ) then 
-                    ! The pixel is calculated for the first time
-                    g_FS_3D(j_LandMap, i_LandMap) = FS_3D
-                else
-                    ! The pixel has been counted at least once and needs to be calculated iteratively
-                    ! get the smaller FS
-                    if ( g_FS_3D(j_LandMap, i_LandMap) > FS_3D ) then
-                        ! and the FS value is smaller than current landslide.
-                        ! So keep the old value and go to the next loop
-                        g_FS_3D(j_LandMap, i_LandMap) =  FS_3D
-                    end if
-                end if 
+
+                if (g_FS_3D(j_LandMap, i_LandMap) > FS_3D) then
+                    ! that is to say this pixel has been calculated already
+                    ! and the FS value is smaller than current landslide.
+                    ! So keep the old value and go to the next loop
+
+
+                    g_FS_3D(j_LandMap, i_LandMap) =  FS_3D
+
+
+                end if
 
 
             end do
-            
-            
+
+
             deallocate(D_raster)
             deallocate(ellipse_i)
             deallocate(ellipse_j)
             deallocate(SM_InEllipse)
             deallocate(z_ellipsoid_In)
-            
+
 
         end do
 
@@ -378,6 +328,10 @@ subroutine Landslide_module()
     LandTime_end = OMP_get_wtime()
     LandRunTime = LandRunTime + (LandTime_end - LandTime_start)
 
+    ! return NoData_value to g_FS_3D
+    where (g_FS_3D == - g_NoData_Value)
+        g_FS_3D = g_NoData_Value
+    end where
 
     where (g_cal_count > 0)
         g_probability = g_unstable_count / g_cal_count

@@ -34,10 +34,10 @@ subroutine Stability3D_VG(FS_3D, volumn_sum, area_sum, SOIL_CODE, D_raster, SM_I
             Porosity,Dry_Unit_Weight, Theta_r, Thera_s, VG_alpha, VG_n)
 
     ! start the stability loop
-    resist_sum = 0.0
-    drive_sum = 0.0
-    volumn_sum = 0.0
-    area_sum = 0.0
+    resist_sum = 0
+    drive_sum = 0
+    volumn_sum = 0
+    area_sum = 0
     do i_SoilColumn = 1, Npixel_ellipse
 
         if (D_raster(i_SoilColumn) <= 0) then
@@ -96,8 +96,8 @@ subroutine Stability3D_VG(FS_3D, volumn_sum, area_sum, SOIL_CODE, D_raster, SM_I
         T_s = S_m * COSD(beta_Sm - SlipApparent_dip)
 
         if (z_w == 0) then
-            N_s = 0.0
-            T_s = 0.0
+            N_s = 0
+            T_s = 0
         end if
         ! kN / KN
         resist_force = (c * slipe_surface + &
@@ -142,12 +142,12 @@ subroutine CalSlip_GeoInfo(i,j, DEM, Dim1, Dim2, main_aspect, &
                                     slipe_surface, SlipApparent_dip
     ! Find Neighbors pixel
     z_a = DEM(j-1, i-1)
-    z_b = DEM(j-1, i)
-    z_c = DEM(j-1, i+1)
-    z_d = DEM(j, i-1)
-    z_f = DEM(j, i+1)
-    z_g = DEM(j+1, i-1)
-    z_h = DEM(j+1, i)
+    z_b = DEM(j, i-1)
+    z_c = DEM(j+1, i-1)
+    z_d = DEM(j-1, i)
+    z_f = DEM(j+1, i)
+    z_g = DEM(j-1, i+1)
+    z_h = DEM(j, i+1)
     z_i = DEM(j+1, i+1)
     dz_dx = ((z_c+2*z_f+z_i)-(z_a+2*z_d+z_g)) / (8 * CellSize_LandInM)
     dz_dy = ((z_g+2*z_h+z_i)-(z_a+2*z_b+z_c)) / (8 * CellSize_LandInM)
@@ -161,17 +161,28 @@ subroutine CalSlip_GeoInfo(i,j, DEM, Dim1, Dim2, main_aspect, &
         beta_yz = ATAND( dz_dy )
         SlipSurface_dip = ATAND( SQRT(dz_dx ** 2 + dz_dy ** 2) )
 
-        SlipSurface_aspect = ATAN2D( dz_dy * CellSize_LandInM, -dz_dx * CellSize_LandInM) 
-        if (SlipSurface_aspect < 0) then
-            SlipSurface_aspect = 90 - SlipSurface_aspect
-        else if (SlipSurface_aspect > 90) then
-            SlipSurface_aspect = 360 - SlipSurface_aspect + 90
-        else
-            SlipSurface_aspect = 90 - SlipSurface_aspect
+        if ( beta_xz == 0 .and. beta_yz > 0 ) then
+            SlipSurface_aspect = 180.0 / 2
+        else if ( beta_xz == 0 .and. beta_yz < 0 ) then
+            SlipSurface_aspect = 3 * 180.0 / 2
+        else if ( beta_xz < 0 .and. beta_yz == 0 ) then
+            SlipSurface_aspect = 0
+        else if ( beta_xz > 0 .and. beta_yz == 0 ) then
+            SlipSurface_aspect = 180.0    
+        else if ( beta_xz == 0 .and. beta_yz == 0 ) then
+            SlipSurface_aspect = 0
+        else if ( beta_xz < 0 .and. beta_yz > 0 ) then
+            SlipSurface_aspect = - ATAND( TAND(beta_yz) / TAND(beta_xz) )
+        else if ( beta_xz > 0 .and. beta_yz > 0 ) then
+            SlipSurface_aspect = 180.0 - ATAND( TAND(beta_yz) / TAND(beta_xz) )
+        else if ( beta_xz > 0 .and. beta_yz < 0 ) then
+            SlipSurface_aspect = 180.0 - ATAND( TAND(beta_yz) / TAND(beta_xz) )
+        else 
+            SlipSurface_aspect = 2 * 180 - ATAND( TAND(beta_yz) / TAND(beta_xz) )
+
         end if
-        
-        SlipApparent_dip = ATAND( TAND(SlipSurface_dip) * &
-                        ABS( COSD(SlipSurface_aspect - main_aspect) ) ) 
+
+        SlipApparent_dip = ATAND( TAND(SlipSurface_dip) * ABS( COSD(SlipSurface_aspect - main_aspect) ) ) 
 
     end if
 
@@ -227,7 +238,7 @@ subroutine GetSoilParaFrom_SoilCode(SOIL_CODE, SoilCohesion, Friction_angle, &
             Theta_r = 0.198
             Thera_s = 0.481
             VG_alpha = 0.012 * 100 / 9.8
-            VG_n = 2.0
+            VG_n = 2
         case (3) ! Sandy clay
             SoilCohesion = 24.5
             Friction_angle = 22.5

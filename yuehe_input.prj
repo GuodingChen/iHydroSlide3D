@@ -1,0 +1,203 @@
+
+# MODEL AREA 
+#---------------------------------------- ** Basic setup ** ---------------------------------------- 
+# Hydrological map
+NCols_Hydro		=	598	# Number of columns
+NRows_Hydro		=	650	# Number of rows
+XLLCorner_Hydro		=	108.335815
+YLLCorner_Hydro		=	32.654663
+CellSize_Hydro		=	0.000833
+# Landslide map	
+NCols_Land		=	3481	# Number of columns
+NRows_Land		=	3891	# Number of rows
+XLLCorner_Land		=	108.354919
+YLLCorner_Land		=	32.674500
+CellSize_Land		=	0.000125
+# define the invalid value
+NoData_value	=	-9999
+############################################
+# Model map Coordinate System
+# Geographic Coordinate System: GCS
+# Projected Coordinate System: PCS
+CoordinateSystem = GCS
+############################################
+# MODEL Run Time Information
+# y(year);m(month);d(day);h(hour);u(minute);s(second)
+###########################################
+# d(day);h(hour);u(minute);s(second)
+##########################################
+TimeMark		=	h
+TimeStep		=	1
+StartDate	    = 	20120627_000000   # 20120702_010000
+LoadState		=	no
+WarmupDate	    =	20120702_000000
+EndDate		    = 	20120709_230000  # end: 20241106_000000
+SaveState		=	no
+##########################################################################
+# MODEL Run Style
+##########################################################################
+RunStyle = simu	# simu, cali_SCEUA
+ModelCore = Hydro    # Hydro, HydroSlide3D
+##########################################################################
+# Routing scheme
+RoutingType =CLR		# JLR (default), CLR
+##########################################################################
+HydroBasicFormat	=	asc 
+HydroBasicPath	=	./HydroBasics/
+##########################################################################
+SoilDownscaleFormat	=	asc 
+SoilDownscalePath	=	./DownscalingBasicData/
+##########################################################################
+LandslideFormat	=	asc 
+LandslidePath	=	./LandslideBasics/
+##########################################################################
+ParamFormat	=	asc
+ParamPath	=	./Params/
+##########################################################################
+StateFormat	=	asc
+StatePath	=	./States/
+##########################################################################
+ICSFormat	=	asc
+ICSPath		=	./ICS/
+##########################################################################
+RainType    =   hete   #  "homo" or "hete"
+RainFormat	=	asc
+RainPath	=	./Rains/rain
+##########################################################################
+PETType     =   hete   #  "homo" or "hete"
+PETFormat	=	asc
+PETPath		=	./PETs/pet
+##########################################################################
+ResultFormat	=	asc  # asc, hdf5
+ResultPath	=	./Results/
+##########################################################################
+CalibFormat	=	asc
+CalibPath	=	./Calibs/
+##########################################################################
+OBSFormat	=	asc
+OBSPath		=	./OBS/
+##########################################################################
+# The below data are omitted, when RunStyle=cali_SCEUA
+##########################################################################
+#OutPix Information
+##########################################################################
+NOutPixs		=	 0
+OutPixColRow 	=	no
+OutPixName1 	=	Yuehe
+OutPixLong1	    =	108.7737
+OutPixLati1		=	32.7327747
+OutPixCol1		=	 0
+OutPixRow1  	= 	120
+##########################################################################
+#Outlet Information
+##########################################################################
+HasOutlet		=	yes
+OutletColRow	=	no
+OutletName		=	Yuehe
+OutletLong		=	108.7744
+OutletLati		=	32.73258
+OutletCol		=	0
+OutletRow		=	0
+#Grid Outputs
+##########################################################################
+GOVar_Rain		=	no
+GOVar_PET		=	no
+GOVar_EPot		=	no
+GOVar_EAct		=	no
+GOVar_W		    =   no
+GOVar_SM		=	yes
+GOVar_R		    =	yes
+GOVar_ExcS		=	no
+GOVar_ExcI		=	no
+GOVar_RS		=	no
+GOVar_RI		=	no
+GOVar_FS3D		=	no
+GOVar_PF		=	no
+GOVar_FVolume	=	no
+GOVar_FArea		=	no
+##########################################################################
+NumOfOutputDates	=	6     #3
+OutputDate_1 = 20120704_000000
+OutputDate_2 = 20120704_030000
+OutputDate_3 = 20120704_060000
+OutputDate_4 = 20120704_120000
+OutputDate_5 = 20120705_000000
+OutputDate_6 = 20120706_000000
+##########################################################################
+
+#---------------------------------------- ** Parameters ** ---------------------------------------- 
+# Parameters for CREST
+# For Example:
+#coeMType		=	Uniform   # Uniform/Distributed
+#coeM		=	24.230076	
+################################################################################
+RainFactType	=	uniform	# The factor to modify the precipitation field
+RainFact		=	1
+################################################################################
+KsatType		=	distributed	# 
+Ksat			=	30
+################################################################################	
+WMType		    =	distributed	# 
+WM			    =	120
+################################################################################	
+BType		    =	uniform	# 
+B		        =	1.0
+################################################################################	
+IMType		    =	distributed	# 
+IM			    =	0.05
+################################################################################	
+KEType		    =	uniform	# 
+KE			    =	1.0
+################################################################################	
+coeMType 	    =	uniform	 #Overland flow speed multiplier
+coeM 		    =	80
+################################################################################				
+expMType	    =	uniform	# 
+expM		    =	0.23
+################################################################################	
+coeRType		=	uniform	# 
+coeR		    =	2.5
+################################################################################	
+coeSType		=	uniform	# 
+coeS		    =	0.01
+################################################################################	
+KSType		    =	uniform	# 
+KS		        =	0.6
+################################################################################	
+KIType		    =	uniform	# 
+KI		        =	0.3
+################################################################################	
+
+
+################################################################################
+# Parameters for stability model
+################################################################################
+ellipse_density	=	20 # unit: -
+################################################################################
+min_ae			=	50    # unit: m
+################################################################################
+max_ae			=	100  # unit: m
+################################################################################
+min_be			=	30   # unit: m
+################################################################################
+max_be			=	60	# unit: m
+################################################################################
+min_ce			=	1	# unit: m
+################################################################################
+max_ce			=	4	# unit: m
+################################################################################
+CellSize_LandInM =	12.5  # unit: m
+################################################################################
+
+#------------------------------ ** parallel computation set ** ----------------------- 
+# set the number of the subbasins
+N_Subbasin = 1
+
+# set the number of threads for hydrological modeling
+NHydroThread = 1
+
+# set the number of total decomposed tiles for 3D slope stability modeling
+Tot_tile = 20
+# set the number of threads for 3D slope stability modeling
+NLandThread = 6
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #

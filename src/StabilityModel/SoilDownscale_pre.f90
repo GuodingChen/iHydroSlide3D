@@ -86,22 +86,13 @@ subroutine SoilDownscale_pre(SM_coarse)
                 cycle
             end if
 
-            iLoc_coarse = NINT( g_NRows - (((g_NRows_Land-i-1) * &
+            iLoc_coarse = NINT( g_NCols - (((g_NCols_Land-i-1) * &
                     g_CellSize_Land + g_yllCorner_Land) &
                     - g_yllCorner) / g_CellSize - 1)
 
             jLoc_coarse = NINT( ((j + 1) * g_CellSize_Land + &
                     g_xllCorner_Land - g_xllCorner) &
                     / g_CellSize - 1)
-
-            ! old version
-            ! iLoc_coarse = NINT( g_NCols - (((g_NCols_Land-i-1) * &
-            !         g_CellSize_Land + g_yllCorner_Land) &
-            !         - g_yllCorner) / g_CellSize - 1)
-
-            ! jLoc_coarse = NINT( ((j + 1) * g_CellSize_Land + &
-            !         g_xllCorner_Land - g_xllCorner) &
-            !         / g_CellSize - 1)
 
             if (SM_coarse(jLoc_coarse,iLoc_coarse) == -9999) then
                 cycle

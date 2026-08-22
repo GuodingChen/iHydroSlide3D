@@ -11,12 +11,12 @@ subroutine ReadMatrixFile_Int(FileName_In, IntMat,  &
     character(*):: FileName_In,sFileFormat_In,strDate_In
     character(len=200):: FileName
     character(14):: strDate,strTemp
-    integer		:: NCols_In,NRows_In
+    integer	:: NCols_In,NRows_In
     double precision :: XLLCorner_In,YLLCorner_In
     double precision :: CellSize_In,NoData_Value_In
     logical :: bIsError,fExist
 
-    integer		:: NCols, NRows
+    integer ::  NCols, NRows
     double precision :: XLLCorner,YLLCorner,CellSize,NoData_Value
 
     integer :: IntMat(0:NCols_In-1,0:NRows_In-1)
@@ -89,11 +89,11 @@ subroutine ReadMatrixFile(FileName_In, dblMat, &
 
     use CREST_Project
     implicit none
-
+    
     character(*):: FileName_In,sFileFormat_In
     character(*) :: strDate_In
     character(len=200):: FileName
-    character(14):: strDate,strTemp
+    character(30):: strDate,strTemp
     integer		:: NCols_In,NRows_In,intTemp
     double precision :: XLLCorner_In,YLLCorner_In
     double precision :: CellSize_In,NoData_Value_In
@@ -103,7 +103,7 @@ subroutine ReadMatrixFile(FileName_In, dblMat, &
     double precision :: XLLCorner,YLLCorner,CellSize,NoData_Value
 
     double precision :: dblMat(0:NCols_In-1,0:NRows_In-1)
-    double precision,allocatable :: dblMatBig(:,:)
+    double precision, allocatable :: dblMatBig(:,:)
     character(len=10) :: sFileFormat
 
     integer			 :: dtTemp(1:6),iNum
@@ -118,10 +118,12 @@ subroutine ReadMatrixFile(FileName_In, dblMat, &
 
     !write(*,*)"Format: ",trim(sFileFormat_In), trim(sFileFormat)
     select case (trim(sFileFormat))
-
+    
     case ("ASC","TXT") !--------------------------------------------
 
         FileName=trim(FileName_In)//trim(strDate)// ".asc"
+
+
         inquire(file=trim(Filename), exist=fExist)
         if(fExist .eqv. .false.)then
             FileName=trim(FileName_In)//trim(strDate)// ".txt"
@@ -131,7 +133,8 @@ subroutine ReadMatrixFile(FileName_In, dblMat, &
                 return
             end if
         end if
-
+        
+        
         call ReadASCFileHeader(trim(FileName),  &
                 NCols, NRows,XLLCorner,YLLCorner, &
                 CellSize,NoData_Value,bIsError)
@@ -157,7 +160,7 @@ subroutine ReadMatrixFile(FileName_In, dblMat, &
         return
     end select
 
-
+    
 
     if(NCols_In /=NCols .or. NRows_In /=NRows  &
             .or. CellSize_In /=CellSize)then
@@ -193,7 +196,7 @@ subroutine WriteMatrixFile_Int(FileName_In,IntMat, &
 
     logical :: bIsError
 
-    integer		:: NCols, NRows
+    integer :: NCols, NRows
     double precision :: XLLCorner,YLLCorner,CellSize,NoData_Value
 
     integer :: IntMat(0:NCols-1,0:NRows-1)
@@ -379,7 +382,7 @@ subroutine ReadASCFileHeader(FileName, &
 
     return
 
-end subroutine
+end subroutine ReadASCFileHeader
 
 
 subroutine ReadASCFile(FileName,dblMat, &
@@ -388,10 +391,10 @@ subroutine ReadASCFile(FileName,dblMat, &
     implicit none
     character(*):: FileName
     logical :: bIsError
-    integer		:: fileID
-    integer		:: i,j
+    integer ::  fileID
+    integer :: i,j
 
-    integer		:: NCols,NRows
+    integer :: NCols,NRows
     double precision :: XLLCorner,YLLCorner
     double precision :: CellSize,NoData_Value
 
@@ -415,7 +418,7 @@ subroutine ReadASCFile(FileName,dblMat, &
 
     close(fileID)
     return
-end subroutine
+end subroutine ReadASCFile
 
 subroutine ReadASCFile_Int(FileName,IntMat,   &
         NCols,NRows,XLLCorner,YLLCorner,  &
@@ -451,14 +454,52 @@ subroutine ReadASCFile_Int(FileName,IntMat,   &
 
     close(fileID)
     return
-end subroutine
+end subroutine ReadASCFile_Int
 
 
 !WriteASCFile---------------------------------------------------
+! subroutine WriteASCFile(Filename, dblMat, nCols, nRows, XLLCorner, &
+!         YLLCorner, CellSize, NoData_Value,bIsError)
+!     implicit none
+!     character(*):: Filename
+!     integer :: lC, lR, nCols, nRows
+!     double precision :: dblMat(0:nCols-1, 0:nRows-1)
+!     double precision :: XLLCorner, YLLCorner
+!     double precision :: CellSize, NoData_Value
+!     integer :: FileID
+!     logical :: bIsError
+
+!     bIsError=.false.
+!     call XXWGetFreeFile(FileID)
+
+!     open(FileID,file=trim(Filename),form='formatted')
+!     write(FileID,"('nCols 		')",advance='no')
+!     write(FileID,"(i8)")nCols
+!     write(FileID,"('nRows 		')",advance='no')
+!     write(FileID,"(i8)")nRows
+!     write(FileID,"('XLLCorner 	')",advance='no')
+!     write(FileID,"(f16.6)")XLLCorner
+!     write(FileID,"('YLLCorner 	')",advance='no')
+!     write(FileID,"(f16.6)")YLLCorner
+!     write(FileID,"('cellSize 	 ')",advance='no')
+!     write(FileID,"(f11.6)")CellSize
+!     write(FileID,"('NODATA_value ')",advance='no')
+!     write(FileID,"(f11.0)")NoData_Value
+!     do lR=0, nRows-1
+!         do lC=0, nCols-1
+!             write(FileID,'(F10.2,A)',advance='no') &
+!                     dblMat(lC,lR),' ';
+!         end do
+!         write(FileID,*)
+!     end do
+!     close (FileID)
+! end subroutine WriteASCFile
+
+
 subroutine WriteASCFile(Filename, dblMat, nCols, nRows, XLLCorner, &
-        YLLCorner, CellSize, NoData_Value,bIsError)
+        YLLCorner, CellSize, NoData_Value, bIsError)
     implicit none
-    character(*):: Filename
+    character(*) :: Filename
     integer :: lC, lR, nCols, nRows
     double precision :: dblMat(0:nCols-1, 0:nRows-1)
     double precision :: XLLCorner, YLLCorner
@@ -466,31 +507,35 @@ subroutine WriteASCFile(Filename, dblMat, nCols, nRows, XLLCorner, &
     integer :: FileID
     logical :: bIsError
 
-    bIsError=.false.
+    bIsError = .false.
     call XXWGetFreeFile(FileID)
 
-    open(FileID,file=trim(Filename),form='formatted')
-    write(FileID,"('nCols 		')",advance='no')
-    write(FileID,"(i8)")nCols
-    write(FileID,"('nRows 		')",advance='no')
-    write(FileID,"(i8)")nRows
-    write(FileID,"('XLLCorner 	')",advance='no')
-    write(FileID,"(f16.6)")XLLCorner
-    write(FileID,"('YLLCorner 	')",advance='no')
-    write(FileID,"(f16.6)")YLLCorner
-    write(FileID,"('cellSize 	 ')",advance='no')
-    write(FileID,"(f11.6)")CellSize
-    write(FileID,"('NODATA_value ')",advance='no')
-    write(FileID,"(f11.0)")NoData_Value
-    do lR=0, nRows-1
-        do lC=0, nCols-1
-            write(FileID,'(F10.2,A)',advance='no') &
-                    dblMat(lC,lR),' ';
+    open(FileID, file=trim(Filename), form='formatted', status='replace')
+
+    ! 写头文件（全部小写、用标准空格分隔）
+    write(FileID,'("ncols ",i0)') nCols
+    write(FileID,'("nrows ",i0)') nRows
+    write(FileID,'("xllcorner ",g0)') XLLCorner
+    write(FileID,'("yllcorner ",g0)') YLLCorner
+    write(FileID,'("cellsize ",g0)') CellSize
+    write(FileID,'("nodata_value ",f11.1)') NoData_Value
+
+    ! 写数据，每行一行数据
+    do lR = 0, nRows-1
+        do lC = 0, nCols-1
+            write(FileID,'(1X,f12.2)', advance='no') dblMat(lC, lR)
         end do
-        write(FileID,*)
+        write(FileID,*)  ! 换行
     end do
-    close (FileID)
-end subroutine
+
+    close(FileID)
+end subroutine WriteASCFile
+
+
+
+
+
+
 
 !WriteASCFile---------------------------------------------------
 subroutine WriteASCFile_Int(Filename, IntMat, nCols, nRows,  &
@@ -527,7 +572,8 @@ subroutine WriteASCFile_Int(Filename, IntMat, nCols, nRows,  &
         write(FileID,*)
     end do
     close (FileID)
-end subroutine
+end subroutine WriteASCFile_Int
+
 !########################################################
 subroutine ExportGridVar(strDate,Rain,PET,EPot,EAct, &
         W,Runoff,ExcS,ExcI,RS,RI, SM)
@@ -537,7 +583,7 @@ subroutine ExportGridVar(strDate,Rain,PET,EPot,EAct, &
     use SoilDownscale_Basic
     use Landslide_Basic
     implicit none
-    character*(*) strDate
+    character(len=*), intent(in) :: strDate
     logical :: bIsError
     double precision :: Rain(0:g_NCols-1,0:g_NRows-1)
     double precision :: PET(0:g_NCols-1,0:g_NRows-1)
@@ -579,29 +625,7 @@ subroutine ExportGridVar(strDate,Rain,PET,EPot,EAct, &
             dblTemp=g_NoData_Value
         end where
 
-        ! Added by Xianwu Xue 2011.4.21
-        if(g_NLakes>0)then
 
-            i=1
-            do while(i<=g_NLakes)
-                iCountOfLakeMask=count((g_LakeMask==i) .and.(dblTemp>=0))
-
-                if(iCountOfLakeMask==0)then
-                    i=i+1
-                    cycle
-                end if
-
-                SumValueInLake &
-                        =sum(dblTemp,(g_LakeMask==i) .and.(dblTemp>=0))
-                SumValueInLake=SumValueInLake/dble(iCountOfLakeMask)
-
-                where((g_LakeMask==i) .and.(dblTemp>=0))
-                    dblTemp=SumValueInLake
-                end where
-
-                i=i+1
-            end do
-        end if
 
         call WriteMatrixFile(trim(g_ResultPath)//"GOVar_" &
                 //trim(g_sGOVarName(1)) // "_" //trim(strDate),   &
@@ -617,29 +641,7 @@ subroutine ExportGridVar(strDate,Rain,PET,EPot,EAct, &
             dblTemp=g_NoData_Value
         end where
 
-        ! Added by Xianwu Xue 2011.4.21
-        if(g_NLakes>0)then
-
-            i=1
-            do while(i<=g_NLakes)
-                iCountOfLakeMask=count((g_LakeMask==i) .and.(dblTemp>=0))
-
-                if(iCountOfLakeMask==0)then
-                    i=i+1
-                    cycle
-                end if
-
-                SumValueInLake &
-                        =sum(dblTemp,(g_LakeMask==i) .and.(dblTemp>=0))
-                SumValueInLake=SumValueInLake/dble(iCountOfLakeMask)
-
-                where((g_LakeMask==i) .and.(dblTemp>=0))
-                    dblTemp=SumValueInLake
-                end where
-
-                i=i+1
-            end do
-        end if
+       
 
         call WriteMatrixFile(trim(g_ResultPath)//"GOVar_" &
                 //trim(g_sGOVarName(2)) // "_" //trim(strDate),  &
@@ -655,30 +657,7 @@ subroutine ExportGridVar(strDate,Rain,PET,EPot,EAct, &
             dblTemp=g_NoData_Value
         end where
 
-        ! Added by Xianwu Xue 2011.4.21
-        if(g_NLakes>0)then
-
-            i=1
-            do while(i<=g_NLakes)
-                iCountOfLakeMask=count((g_LakeMask==i) .and.(dblTemp>=0))
-
-                if(iCountOfLakeMask==0)then
-                    i=i+1
-                    cycle
-                end if
-
-                SumValueInLake &
-                        =sum(dblTemp,(g_LakeMask==i) .and.(dblTemp>=0))
-                SumValueInLake=SumValueInLake/dble(iCountOfLakeMask)
-
-                where((g_LakeMask==i) .and.(dblTemp>=0))
-                    dblTemp=SumValueInLake
-                end where
-
-                i=i+1
-            end do
-        end if
-
+        
         call WriteMatrixFile(trim(g_ResultPath)//"GOVar_" &
                 //trim(g_sGOVarName(3)) // "_" //trim(strDate),  &
                 dblTemp, g_NCols,g_NRows,   &
@@ -693,30 +672,7 @@ subroutine ExportGridVar(strDate,Rain,PET,EPot,EAct, &
             dblTemp=g_NoData_Value
         end where
 
-        ! Added by Xianwu Xue 2011.4.21
-        if(g_NLakes>0)then
-
-            i=1
-            do while(i<=g_NLakes)
-                iCountOfLakeMask=count((g_LakeMask==i) .and.(dblTemp>=0))
-
-                if(iCountOfLakeMask==0)then
-                    i=i+1
-                    cycle
-                end if
-
-                ! 	        SumValueInLake
-                !      &          =sum(dblTemp,(g_LakeMask==i) .and.(dblTemp>=0))
-                !               SumValueInLake=SumValueInLake/dble(iCountOfLakeMask)
-
-                where((g_LakeMask==i) .and.(dblTemp>=0))
-                    dblTemp=g_tParams%WM*(1+g_tParams%B)
-
-                end where
-
-                i=i+1
-            end do
-        end if
+        
 
         call WriteMatrixFile(trim(g_ResultPath)//"GOVar_"  &
                 //trim(g_sGOVarName(4)) // "_" //trim(strDate),  &
@@ -733,29 +689,7 @@ subroutine ExportGridVar(strDate,Rain,PET,EPot,EAct, &
             dblTemp=g_NoData_Value
         end where
 
-        ! Added by Xianwu Xue 2011.4.21
-        if(g_NLakes>0)then
-
-            i=1
-            do while(i<=g_NLakes)
-                iCountOfLakeMask=count((g_LakeMask==i) .and.(dblTemp>=0))
-
-                if(iCountOfLakeMask==0)then
-                    i=i+1
-                    cycle
-                end if
-
-                ! 	        SumValueInLake
-                !      &          =sum(dblTemp,(g_LakeMask==i) .and.(dblTemp>=0))
-                !               SumValueInLake=SumValueInLake/dble(iCountOfLakeMask)
-                SumValueInLake=100.0
-                where((g_LakeMask==i) .and.(dblTemp>=0))
-                    dblTemp=SumValueInLake
-                end where
-
-                i=i+1
-            end do
-        end if
+        
 
         call WriteMatrixFile(trim(g_ResultPath)//"GOVar_"  &
                 //trim(g_sGOVarName(5)) // "_" //trim(strDate),   &
@@ -771,29 +705,7 @@ subroutine ExportGridVar(strDate,Rain,PET,EPot,EAct, &
             dblTemp=g_NoData_Value
         end where
 
-        ! Added by Xianwu Xue 2011.4.21
-        if(g_NLakes>0)then
-
-            i=1
-            do while(i<=g_NLakes)
-                iCountOfLakeMask=count((g_LakeMask==i) .and.(dblTemp>=0))
-
-                if(iCountOfLakeMask==0)then
-                    i=i+1
-                    cycle
-                end if
-
-                SumValueInLake &
-                        =sum(dblTemp,(g_LakeMask==i) .and.(dblTemp>=0))
-                SumValueInLake=SumValueInLake/dble(iCountOfLakeMask)
-
-                where((g_LakeMask==i) .and.(dblTemp>=0))
-                    dblTemp=SumValueInLake
-                end where
-
-                i=i+1
-            end do
-        end if
+       
 
         call WriteMatrixFile(trim(g_ResultPath)//"GOVar_"   &
                 //trim(g_sGOVarName(6)) // "_" //trim(strDate),   &
@@ -803,35 +715,13 @@ subroutine ExportGridVar(strDate,Rain,PET,EPot,EAct, &
     end if
 
     if(g_bGOVar(7))then
-        where(g_Mask/=g_NoData_Value)
-            dblTemp=ExcS/g_TimeStep
+        where(g_Mask/=g_NoData_Value .and. g_Stream /= 1)
+            dblTemp=ExcS
         elsewhere
             dblTemp=g_NoData_Value
         end where
 
-        ! Added by Xianwu Xue 2011.4.21
-        if(g_NLakes>0)then
-
-            i=1
-            do while(i<=g_NLakes)
-                iCountOfLakeMask=count((g_LakeMask==i) .and.(dblTemp>=0))
-
-                if(iCountOfLakeMask==0)then
-                    i=i+1
-                    cycle
-                end if
-
-                SumValueInLake &
-                        =sum(dblTemp,(g_LakeMask==i) .and.(dblTemp>=0))
-                SumValueInLake=SumValueInLake/dble(iCountOfLakeMask)
-
-                where((g_LakeMask==i) .and.(dblTemp>=0))
-                    dblTemp=SumValueInLake
-                end where
-
-                i=i+1
-            end do
-        end if
+        
 
         call WriteMatrixFile(trim(g_ResultPath)//"GOVar_" &
                 //trim(g_sGOVarName(7)) // "_" //trim(strDate),  &
@@ -841,36 +731,13 @@ subroutine ExportGridVar(strDate,Rain,PET,EPot,EAct, &
     end if
 
     if(g_bGOVar(8))then
-        where(g_Mask/=g_NoData_Value)
-            dblTemp=ExcI/g_TimeStep
+        where(g_Mask/=g_NoData_Value .and. g_Stream /= 1)
+            dblTemp=ExcI
         elsewhere
             dblTemp=g_NoData_Value
         end where
 
-        ! Added by Xianwu Xue 2011.4.21
-        if(g_NLakes>0)then
-
-            i=1
-            do while(i<=g_NLakes)
-                iCountOfLakeMask=count((g_LakeMask==i) .and.(dblTemp>=0))
-
-                if(iCountOfLakeMask==0)then
-                    i=i+1
-                    cycle
-                end if
-
-                SumValueInLake  &
-                        =sum(dblTemp,(g_LakeMask==i) .and.(dblTemp>=0))
-                SumValueInLake=SumValueInLake/dble(iCountOfLakeMask)
-
-                where((g_LakeMask==i) .and.(dblTemp>=0))
-                    dblTemp=SumValueInLake
-                end where
-
-
-                i=i+1
-            end do
-        end if
+        
 
         call WriteMatrixFile(trim(g_ResultPath)//"GOVar_"  &
                 //trim(g_sGOVarName(8)) // "_" //trim(strDate),  &
@@ -880,35 +747,13 @@ subroutine ExportGridVar(strDate,Rain,PET,EPot,EAct, &
     end if
 
     if(g_bGOVar(9))then
-        where(g_Mask/=g_NoData_Value)
-            dblTemp=RS/g_TimeStep
+        where(g_Mask/=g_NoData_Value .and. g_Stream /= 1)
+            dblTemp=RS
         elsewhere
             dblTemp=g_NoData_Value
         end where
 
-        ! Added by Xianwu Xue 2011.4.21
-        if(g_NLakes>0)then
-
-            i=1
-            do while(i<=g_NLakes)
-                iCountOfLakeMask=count((g_LakeMask==i) .and.(dblTemp>=0))
-
-                if(iCountOfLakeMask==0)then
-                    i=i+1
-                    cycle
-                end if
-
-                SumValueInLake &
-                        =sum(dblTemp,(g_LakeMask==i) .and.(dblTemp>=0))
-                SumValueInLake=SumValueInLake/dble(iCountOfLakeMask)
-
-                where((g_LakeMask==i) .and.(dblTemp>=0))
-                    dblTemp=SumValueInLake
-                end where
-
-                i=i+1
-            end do
-        end if
+        
 
         call WriteMatrixFile(trim(g_ResultPath)//"GOVar_" &
                 //trim(g_sGOVarName(9)) // "_" //trim(strDate),  &
@@ -918,35 +763,13 @@ subroutine ExportGridVar(strDate,Rain,PET,EPot,EAct, &
     end if
 
     if(g_bGOVar(10))then
-        where(g_Mask/=g_NoData_Value)
-            dblTemp=RI/g_TimeStep
+        where(g_Mask/=g_NoData_Value .and. g_Stream /= 1)
+            dblTemp=RI
         elsewhere
             dblTemp=g_NoData_Value
         end where
 
-        ! Added by Xianwu Xue 2011.4.21
-        if(g_NLakes>0)then
-
-            i=1
-            do while(i<=g_NLakes)
-                iCountOfLakeMask=count((g_LakeMask==i) .and.(dblTemp>=0))
-
-                if(iCountOfLakeMask==0)then
-                    i=i+1
-                    cycle
-                end if
-
-                SumValueInLake  &
-                        =sum(dblTemp,(g_LakeMask==i) .and.(dblTemp>=0))
-                SumValueInLake=SumValueInLake/dble(iCountOfLakeMask)
-
-                where((g_LakeMask==i) .and.(dblTemp>=0))
-                    dblTemp=SumValueInLake
-                end where
-
-                i=i+1
-            end do
-        end if
+        
 
         call WriteMatrixFile(trim(g_ResultPath)//"GOVar_" &
                 //trim(g_sGOVarName(10)) // "_" //trim(strDate),  &
@@ -1031,7 +854,7 @@ subroutine Export_HDF5(strDate,Rain,PET,EPot,EAct, &
     use hdf5_utils
     use hdf5
     implicit none
-    character*(*) strDate
+    character(len=*), intent(in) :: strDate
     logical :: bIsError
 
     integer(HID_T) :: file_id
@@ -1092,7 +915,7 @@ subroutine Export_HDF5(strDate,Rain,PET,EPot,EAct, &
     ! rain
     if(g_bGOVar(0))then
         where(g_Mask/=g_NoData_Value)
-            dblTemp=Rain/g_TimeStep * 100
+            dblTemp=Rain * 100
         elsewhere
             dblTemp=g_NoData_Value
         end where
@@ -1102,11 +925,11 @@ subroutine Export_HDF5(strDate,Rain,PET,EPot,EAct, &
                 //trim(g_sGOVarName(0)) // "_" //trim(strDate), &
                 dblTemp, filter='gzip+shuffle')
     end if
-
+    
     ! PET
     if(g_bGOVar(1))then
         where(g_Mask/=g_NoData_Value)
-            dblTemp=PET/g_TimeStep * 100
+            dblTemp=PET * 100
         elsewhere
             dblTemp=g_NoData_Value
         end where
@@ -1120,7 +943,7 @@ subroutine Export_HDF5(strDate,Rain,PET,EPot,EAct, &
     ! EPOT
     if(g_bGOVar(2))then
         where(g_Mask/=g_NoData_Value)
-            dblTemp=EPot/g_TimeStep * 100
+            dblTemp=EPot * 100
         elsewhere
             dblTemp=g_NoData_Value
         end where
@@ -1134,7 +957,7 @@ subroutine Export_HDF5(strDate,Rain,PET,EPot,EAct, &
     ! EAct
     if(g_bGOVar(3))then
         where(g_Mask/=g_NoData_Value)
-            dblTemp=EAct/g_TimeStep * 100
+            dblTemp=EAct * 100
         elsewhere
             dblTemp=g_NoData_Value
         end where
@@ -1188,7 +1011,7 @@ subroutine Export_HDF5(strDate,Rain,PET,EPot,EAct, &
     end if
 
 
-
+    
     ! ExcS
     if(g_bGOVar(7))then
         where(g_Mask/=g_NoData_Value)
@@ -1319,7 +1142,8 @@ subroutine CalculateOutletData(k,Rain,PET,EPot,EAct,  &
     use CREST_Basic
     use CREST_Param
     implicit none
-    integer :: N,k
+    integer :: N,k,i,j
+    integer :: nAllcells, nNotStream
     double precision :: Rain(0:g_NCols-1,0:g_NRows-1)
     double precision :: PET(0:g_NCols-1,0:g_NRows-1)
     double precision :: EPot(0:g_NCols-1,0:g_NRows-1)
@@ -1332,33 +1156,35 @@ subroutine CalculateOutletData(k,Rain,PET,EPot,EAct,  &
     double precision :: Runoff(0:g_NCols-1,0:g_NRows-1)
     !-----------------------------------------------
     !Output the state of outlet
-    N=count(g_tOutlet%Mask/= g_NoData_Value)
+    N = count(g_tOutlet%Mask/= g_NoData_Value .and. g_Stream /=1)
+    nAllcells = count(g_tOutlet%Mask /= g_NoData_Value)
+    nNotStream = count(g_tOutlet%Mask/= g_NoData_Value .and. g_Stream /= 1)
+    
+    
     if(g_tOutlet%bIsOut .eqv. .false.)then
-        g_tOutlet%Rain(k)=sum(Rain/g_TimeStep,  &
-                g_tOutlet%Mask/= g_NoData_Value)/N
-        g_tOutlet%PET(k)=sum(PET/g_TimeStep,  &
-                g_tOutlet%Mask/= g_NoData_Value)/N
-        g_tOutlet%EPot(k)=sum(EPot/g_TimeStep,  &
-                g_tOutlet%Mask/= g_NoData_Value)/N
-        g_tOutlet%EAct(k)=sum(EAct/g_TimeStep, &
-                g_tOutlet%Mask/= g_NoData_Value)/N
-        g_tOutlet%W(k)=sum(W, &
-                g_tOutlet%Mask/= g_NoData_Value)/N
-        g_tOutlet%SM(k)=sum(W/g_tParams%WM,  &
-                g_tOutlet%Mask/= g_NoData_Value)/N
+        g_tOutlet%Rain(k)=sum(Rain, g_tOutlet%Mask/= g_NoData_Value) / nAllcells
+        g_tOutlet%PET(k)=sum(PET, g_tOutlet%Mask/= g_NoData_Value) / nAllcells
+        g_tOutlet%EPot(k)=sum(EPot, g_tOutlet%Mask/= g_NoData_Value)/nAllcells
+        g_tOutlet%EAct(k)=sum(EAct, g_tOutlet%Mask/= g_NoData_Value &
+                                            .and. g_Stream /= 1) / nNotStream
 
-        g_tOutlet%R(k)=Runoff(g_tOutlet%Col, &
-                g_tOutlet%Row)
+        g_tOutlet%W(k)=sum(W, g_tOutlet%Mask/= g_NoData_Value &
+                                            .and. g_Stream /= 1) / nNotStream
+        g_tOutlet%SM(k)=sum(W/g_tParams%WM, g_tOutlet%Mask/= g_NoData_Value &
+                                            .and. g_Stream /= 1) / nNotStream
+        
+        g_tOutlet%R(k)=Runoff(g_tOutlet%Col, g_tOutlet%Row)
 
-        g_tOutlet%ExcS(k)=sum(ExcS/g_TimeStep,  &
-                g_tOutlet%Mask/= g_NoData_Value)/N
-        g_tOutlet%ExcI(k)=sum(ExcI/g_TimeStep, &
-                g_tOutlet%Mask/= g_NoData_Value)/N
-        g_tOutlet%RS(k)=sum(RS/g_TimeStep,  &
-                g_tOutlet%Mask/= g_NoData_Value)/N
-        g_tOutlet%RI(k)=sum(RI/g_TimeStep, &
-                g_tOutlet%Mask/= g_NoData_Value)/N
-    ELSE
+        g_tOutlet%ExcS(k)=sum(ExcS/g_TimeStep,  g_tOutlet%Mask/= g_NoData_Value &
+                                            .and. g_Stream /= 1) / nNotStream
+
+        g_tOutlet%ExcI(k)=sum(ExcI/g_TimeStep, g_tOutlet%Mask/= g_NoData_Value&
+                                            .and. g_Stream /= 1) / nNotStream
+        g_tOutlet%RS(k)=sum(RS/g_TimeStep,  g_tOutlet%Mask/= g_NoData_Value &
+                                            .and. g_Stream /= 1) / nNotStream
+        g_tOutlet%RI(k)=sum(RI/g_TimeStep, g_tOutlet%Mask/= g_NoData_Value &
+                                            .and. g_Stream /= 1) / nNotStream
+    else
         g_tOutlet%Rain(k)=g_NoData_Value
         g_tOutlet%PET(k)=g_NoData_Value
         g_tOutlet%EPot(k)=g_NoData_Value
@@ -1370,114 +1196,11 @@ subroutine CalculateOutletData(k,Rain,PET,EPot,EAct,  &
         g_tOutlet%ExcI(k)=g_NoData_Value
         g_tOutlet%RS(k)=g_NoData_Value
         g_tOutlet%RI(k)=g_NoData_Value
-    END IF
+    end if 
+    
     return
 end subroutine CalculateOutletData
 
-subroutine ExportOutletData()
-    use CREST_Project
-    implicit none
-    integer :: fileid
-    integer :: i,k
-    integer :: dtTemp(1:6)
-    double precision :: NSCE, Bias, CC
-
-    call XXWGetFreeFile(fileid)
-
-
-    if (g_tOutlet%bIsOut .eqv. .true.) then !Outlet is not in Basin area
-        return
-    end if
-
-    open(fileid,file=trim(g_ResultPath)//"Outlet_" &
-            //trim(g_tOutlet%Name) // "_Results.csv", &
-            form="formatted")
-    if(g_tOutlet%HasOBS .eqv. .true.)then
-        write(fileid,*) "DateTime,",  &
-                "Rain,", &
-                "PET,", &
-                "EPot,", &
-                "EAct,", &
-                "W,", &
-                "SM,", &
-                "RS,", &
-                "RI,", &
-                "ExcS,", &
-                "ExcI,", &
-                "R,","RObs"
-    else
-        write(fileid,*) "DateTime,", &
-                "Rain,",  &
-                "PET,",  &
-                "EPot,",  &
-                "EAct,",  &
-                "W,",  &
-                "SM,", &
-                "RS,",  &
-                "RI,", &
-                "ExcS,", &
-                "ExcI,",  &
-                "R"
-    end if
-
-    dtTemp=g_StartDate
-
-    do k=0, ubound(g_tOutlet%Rain,1)
-        write(fileid,"(I4,A1,I2,A1,I2,A1,I2,A1,I2,A1,I2,A1)", &
-                advance='no') &
-                dtTemp(1),"-",  &
-                dtTemp(2),"-", &
-                dtTemp(3)," ", &
-                dtTemp(4),":",  &
-                dtTemp(5),":",  &
-                dtTemp(6),","
-
-        write(fileid,"(10(F10.3,A1),F10.3)",advance='no')  &
-                g_tOutlet%Rain(k),",",  &
-                g_tOutlet%PET(k),",",  &
-                g_tOutlet%EPot(k),",",  &
-                g_tOutlet%EAct(k),",", &
-                g_tOutlet%W(k),",",  &
-                g_tOutlet%SM(k),",", &
-                g_tOutlet%RS(k),",",  &
-                g_tOutlet%RI(k),",", &
-                g_tOutlet%ExcS(k),",", &
-                g_tOutlet%ExcI(k),",",  &
-                g_tOutlet%R(k)
-        if(g_tOutlet%HasOBS .eqv. .true.)then
-            write(fileid,"(A1,F10.3)")  &
-                    ",",g_tOutlet%RObs(k)
-        else
-            write(fileid,*)
-        end if
-        call myDAdd(g_TimeMark,g_TimeStep,dtTemp)
-    end do
-    close(fileid)
-
-    if(g_tOutlet%HasOBS .eqv. .true.)then
-        call XXWGetFreeFile(fileid)
-        open(fileid,file=trim(g_ResultPath)//"Outlet_" &
-                //trim(g_tOutlet%Name) // "_Results_Statistics.csv", &
-                form="formatted")
-
-        call GetNSCE(g_tOutlet%RObs,  &
-                g_tOutlet%R,g_NumWarmup,g_ITMax,  &
-                NSCE)
-        call GetBias(g_tOutlet%RObs, &
-                g_tOutlet%R,g_NumWarmup,g_ITMax,  &
-                Bias)
-        call GetCC(g_tOutlet%RObs,  &
-                g_tOutlet%R,g_NumWarmup,g_ITMax,  &
-                CC)
-        write(fileid,*)"NSCE,",NSCE
-        write(fileid,*)"Bias(%),",Bias
-        write(fileid,*)"CC,",CC
-
-        close(fileid)
-    end if
-    return
-end subroutine ExportOutletData
-!########################################################
 
 subroutine CalculateOutPixData(k,Rain,PET,EPot,EAct,   &
         W,Runoff,ExcS,ExcI,RS,RI)
@@ -1485,7 +1208,8 @@ subroutine CalculateOutPixData(k,Rain,PET,EPot,EAct,   &
     use CREST_Basic
     use CREST_Param
     implicit none
-    integer :: N,k,i
+    integer :: k,i
+    integer :: nAllcells, nNotStream
     double precision :: Rain(0:g_NCols-1,0:g_NRows-1)
     double precision :: PET(0:g_NCols-1,0:g_NRows-1)
     double precision :: EPot(0:g_NCols-1,0:g_NRows-1)
@@ -1498,40 +1222,38 @@ subroutine CalculateOutPixData(k,Rain,PET,EPot,EAct,   &
     double precision :: Runoff(0:g_NCols-1,0:g_NRows-1)
     !-----------------------------------------------
     !Output the state of the Pixes
+    nAllcells = count(g_tOutlet%Mask /= g_NoData_Value)
+    nNotStream = count(g_tOutlet%Mask/= g_NoData_Value .and. g_Stream /= 1)
+    
+    do i = 1, g_NOutPixs
+        
+        if (g_tOutPix(i)%bIsOut .eqv. .false.) THEN
+            g_tOutPix(i)%Rain(k)=sum(Rain, g_tOutlet%Mask/= g_NoData_Value) / nAllcells
 
-    DO i = 0, g_NOutPixs-1
-        N=count(g_tOutPix(i)%Mask/= g_NoData_Value)
-        IF (g_tOutPix(i)%bIsOut .eqv. .false.) THEN
-            g_tOutPix(i)%Rain(k)=sum(Rain/g_TimeStep,  &
-                    g_tOutPix(i)%Mask/= g_NoData_Value)/N
-            g_tOutPix(i)%PET(k)=sum(PET/g_TimeStep, &
-                    g_tOutPix(i)%Mask/= g_NoData_Value)/N
-            g_tOutPix(i)%EPot(k)=sum(EPot/g_TimeStep, &
-                    g_tOutPix(i)%Mask/= g_NoData_Value)/N
-            g_tOutPix(i)%EAct(k)=sum(EAct/g_TimeStep, &
-                    g_tOutPix(i)%Mask/= g_NoData_Value)/N
+            g_tOutPix(i)%PET(k)=sum(PET, g_tOutlet%Mask/= g_NoData_Value) / nAllcells
             
-            g_tOutPix(i)%W(k)=sum(W,  &
-                    g_tOutPix(i)%Mask/= g_NoData_Value)/N
-            g_tOutPix(i)%SM(k)=sum(W/g_tParams%WM,  &
-                    g_tOutPix(i)%Mask/= g_NoData_Value)/N
+            g_tOutPix(i)%EPot(k)=sum(EPot, g_tOutlet%Mask/= g_NoData_Value)/nAllcells
+            g_tOutPix(i)%EAct(k)=sum(EAct, g_tOutlet%Mask/= g_NoData_Value &
+                                            .and. g_Stream /= 1) / nNotStream
+            
+            g_tOutPix(i)%W(k)=sum(W, g_tOutlet%Mask/= g_NoData_Value &
+                                            .and. g_Stream /= 1) / nNotStream
+            g_tOutPix(i)%SM(k)=sum(W/g_tParams%WM, g_tOutlet%Mask/= g_NoData_Value &
+                                            .and. g_Stream /= 1) / nNotStream
 
-            g_tOutPix(i)%R(k)=Runoff(g_tOutPix(i)%Col,  &
-                    g_tOutPix(i)%Row)
+            g_tOutPix(i)%R(k)=Runoff(g_tOutPix(i)%Col, g_tOutPix(i)%Row)
 
-            g_tOutPix(i)%ExcS(k)=sum(ExcS/g_TimeStep,  &
-                    g_tOutPix(i)%Mask/= g_NoData_Value)/N
-            g_tOutPix(i)%ExcI(k)=sum(ExcI/g_TimeStep,  &
-                    g_tOutPix(i)%Mask/= g_NoData_Value)/N
-            !g_tOutPix(i)%RS(k)=sum(RS/g_TimeStep,  &
-            !g_tOutPix(i)%Mask/= g_NoData_Value)/N
-            !g_tOutPix(i)%RI(k)=sum(RI/g_TimeStep, &
-            !g_tOutPix(i)%Mask/= g_NoData_Value)/N
-            ! modified by cgd: output the pixcel value of RS and RI
-            g_tOutPix(i)%RS(k) = RS(g_tOutPix(i)%Col,  g_tOutPix(i)%Row)
-            g_tOutPix(i)%RI(k) = RI(g_tOutPix(i)%Col,  g_tOutPix(i)%Row)
+            g_tOutPix(i)%ExcS(k)=sum(ExcS,  g_tOutlet%Mask/= g_NoData_Value &
+                                            .and. g_Stream /= 1) / nNotStream
+            g_tOutPix(i)%ExcI(k)=sum(ExcI, g_tOutlet%Mask/= g_NoData_Value&
+                                            .and. g_Stream /= 1) / nNotStream
+            g_tOutPix(i)%RS(k) = sum(RS,  g_tOutlet%Mask/= g_NoData_Value &
+                                            .and. g_Stream /= 1) / nNotStream
+            g_tOutPix(i)%RI(k) = sum(RI, g_tOutlet%Mask/= g_NoData_Value &
+                                            .and. g_Stream /= 1) / nNotStream
 
-        ELSE
+            
+        else
             g_tOutPix(i)%Rain(k)=g_NoData_Value
             g_tOutPix(i)%PET(k)=g_NoData_Value
             g_tOutPix(i)%EPot(k)=g_NoData_Value
@@ -1543,121 +1265,272 @@ subroutine CalculateOutPixData(k,Rain,PET,EPot,EAct,   &
             g_tOutPix(i)%ExcI(k)=g_NoData_Value
             g_tOutPix(i)%RS(k)=g_NoData_Value
             g_tOutPix(i)%RI(k)=g_NoData_Value
-        END IF
+        end if 
     end do
+
+
+
     return
 end subroutine CalculateOutPixData
 
-!---------------------------------------------------------------------
-subroutine ExportPixData()
-    use CREST_Project
-    implicit none
-    integer :: fileid
-    integer :: i,k
-    integer	:: dtTemp(1:6)
-    double precision :: NSCE, Bias, CC
 
-    do i = 0, g_NOutPixs-1
-        if (g_tOutPix(i)%bIsOut .eqv. .true.) then !OutPix is not in Basin area
+
+subroutine OutputPixValueToCSV()
+    use CREST_Project
+    use csv_module
+    use TimeProcess
+    
+    implicit none
+    type(csv_file) :: fPixOut
+    logical :: status_ok
+    integer,dimension(:),allocatable :: itypes
+    integer :: iOutPix, iCSV_row
+    character(len=200):: CSVfileName
+    
+    
+    do iOutPix = 1, g_NOutPixs
+        
+        if (g_tOutPix(iOutPix)%bIsOut .eqv. .true.) then !OutPix is not in Basin area
             cycle
         end if
 
-        call XXWGetFreeFile(fileid)
-
-        open(fileid,file=trim(g_ResultPath)//"OutPix_"  &
-                //trim(g_tOutPix(i)%Name) // "_Results.csv",  &
-                form="formatted")
-        if(g_tOutPix(i)%HasOBS .eqv. .true.)then
-            write(fileid,*) "DateTime,",  &
-                    "Rain,", &
-                    "PET,",  &
-                    "EPot,",  &
-                    "EAct,",  &
-                    "W,",  &
-                    "SM,", &
-                    "RS,",  &
-                    "RI,", &
-                    "ExcS,", &
-                    "ExcI,",  &
-                    "R,","RObs"
-        else
-            write(fileid,*) "DateTime,", &
-                    "Rain,", &
-                    "PET,", &
-                    "EPot,", &
-                    "EAct,",  &
-                    "W,",  &
-                    "SM,",   &
-                    "RS,", &
-                    "RI,",  &
-                    "ExcS,",   &
-                    "ExcI,",  &
-                    "R"
-        end if
-
-        dtTemp=g_StartDate
-
-        do k=0, ubound(g_tOutPix(i)%Rain,1)
-            write(fileid,"(I4,A1,I2,A1,I2,A1,I2,A1,I2,A1,I2,A1)",  &
-                    advance='no')  &
-                    dtTemp(1),"-", &
-                    dtTemp(2),"-",  &
-                    dtTemp(3)," ",  &
-                    dtTemp(4),":",  &
-                    dtTemp(5),":",  &
-                    dtTemp(6),","
-
-            write(fileid,"(10(F10.3,A1),F10.3)",advance='no')  &
-                    g_tOutPix(i)%Rain(k),",",  &
-                    g_tOutPix(i)%PET(k),",",  &
-                    g_tOutPix(i)%EPot(k),",",  &
-                    g_tOutPix(i)%EAct(k),",", &
-                    g_tOutPix(i)%W(k),",",  &
-                    g_tOutPix(i)%SM(k),",",  &
-                    g_tOutPix(i)%RS(k),",",   &
-                    g_tOutPix(i)%RI(k),",",  &
-                    g_tOutPix(i)%ExcS(k),",",  &
-                    g_tOutPix(i)%ExcI(k),",",  &
-                    g_tOutPix(i)%R(k)
-
-            if(g_tOutPix(i)%HasOBS .eqv. .true.)then
-                write(fileid,"(A1,F10.3)") &
-                        ",",g_tOutPix(i)%RObs(k)
-            else
-                write(fileid,*)
-            end if
+        CSVfileName = trim(g_ResultPath)//"OutPix_" //trim(g_tOutPix(iOutPix)%Name) // "_Results.csv"
+    
 
 
-            call myDAdd(g_TimeMark,g_TimeStep,dtTemp)
+        ! set optional inputs:
+        call fPixOut%initialize(verbose = .true.)
+
+        ! open the file
+        call fPixOut%open(CSVfileName, n_cols = 12, status_ok = status_ok)
+        ! add header
+        ! The array constructor requires all elements to have the same length. 
+        ! add the space if necessary
+        call fPixOut%add(['DateTime', 'Rain    ', 'PET     ', 'EPot    ', &
+                        'EAct    ', 'W       ', 'SM      ', 'RS      ', &
+                        'RI      ', 'ExcS    ', 'ExcI    ', 'R       '])
+        
+        call fPixOut%next_row()
+        
+        ! write the date row to row
+        do iCSV_row = 1, size(SimuDateTimeList)
+
+            call fPixOut%add(GetPrintDatetime(SimuDateTimeList(iCSV_row)))
+            call fPixOut%add(g_tOutPix(iOutPix)%Rain(iCSV_row), real_fmt='(F10.3)')
+            call fPixOut%add(g_tOutPix(iOutPix)%PET(iCSV_row), real_fmt='(F10.3)')
+            call fPixOut%add(g_tOutPix(iOutPix)%EPot(iCSV_row), real_fmt='(F10.3)')
+
+            call fPixOut%add(g_tOutPix(iOutPix)%EAct(iCSV_row), real_fmt='(F10.3)')
+            call fPixOut%add(g_tOutPix(iOutPix)%W(iCSV_row), real_fmt='(F10.3)')
+            call fPixOut%add(g_tOutPix(iOutPix)%SM(iCSV_row), real_fmt='(F10.3)')
+            call fPixOut%add(g_tOutPix(iOutPix)%RS(iCSV_row), real_fmt='(F10.3)')
+
+            call fPixOut%add(g_tOutPix(iOutPix)%RI(iCSV_row), real_fmt='(F10.3)')
+            call fPixOut%add(g_tOutPix(iOutPix)%ExcS(iCSV_row), real_fmt='(F10.3)')
+            call fPixOut%add(g_tOutPix(iOutPix)%ExcI(iCSV_row), real_fmt='(F10.3)')
+            call fPixOut%add(g_tOutPix(iOutPix)%R(iCSV_row), real_fmt='(F10.3)')
+
+            call fPixOut%next_row()
         end do
-
-        close(fileid)
-
-        if(g_tOutPix(i)%HasOBS .eqv. .true.)then
-            call XXWGetFreeFile(fileid)
-            open(fileid,file=trim(g_ResultPath)//"OutPix_"  &
-                    //trim(g_tOutPix(i)%Name) // "_Results_Statistics.csv", &
-                    form="formatted")
-
-            call GetNSCE(g_tOutPix(i)%RObs,  &
-                    g_tOutPix(i)%R,g_NumWarmup,g_ITMax,   &
-                    NSCE)
-            call GetBias(g_tOutPix(i)%RObs, &
-                    g_tOutPix(i)%R,g_NumWarmup,g_ITMax, &
-                    Bias)
-            call GetCC(g_tOutPix(i)%RObs,  &
-                    g_tOutPix(i)%R,g_NumWarmup,g_ITMax, &
-                    CC)
-            write(fileid,*)"NSCE,",NSCE
-            write(fileid,*)"Bias(%),",Bias
-            write(fileid,*)"CC,",CC
-
-            close(fileid)
-        end if
+        ! finished write CSV
+        call fPixOut%close(status_ok)
+        
     end do
 
+    
     return
-end subroutine ExportPixData
+end subroutine OutputPixValueToCSV   
 
 
+
+
+subroutine OutputOutletValueToCSV()
+    use CREST_Project
+    use csv_module
+    use TimeProcess
+    
+    implicit none
+    type(csv_file) :: fPixOut
+    logical :: status_ok
+    integer,dimension(:),allocatable :: itypes
+    integer :: iOutPix, iCSV_row
+    character(len=200):: CSVfileName
+    
+    
+
+
+    CSVfileName = trim(g_ResultPath)//"Outlet_" //trim(g_tOutlet%Name) // "_Results.csv"
+
+    
+
+    ! set optional inputs:
+    call fPixOut%initialize(verbose = .true.)
+
+    ! open the file
+    call fPixOut%open(CSVfileName, n_cols = 12, status_ok = status_ok)
+    ! add header
+    ! The array constructor requires all elements to have the same length. 
+    ! add the space if necessary
+    call fPixOut%add(['DateTime', 'Rain    ', 'PET     ', 'EPot    ', &
+                    'EAct    ', 'W       ', 'SM      ', 'RS      ', &
+                    'RI      ', 'ExcS    ', 'ExcI    ', 'R       '])
+    
+    call fPixOut%next_row()
+    
+    ! write the date row to row
+    do iCSV_row = 1, size(SimuDateTimeList)
+
+        call fPixOut%add(GetPrintDatetime(SimuDateTimeList(iCSV_row)))
+        call fPixOut%add(g_tOutlet%Rain(iCSV_row), real_fmt='(F10.3)')
+        call fPixOut%add(g_tOutlet%PET(iCSV_row), real_fmt='(F10.3)')
+        call fPixOut%add(g_tOutlet%EPot(iCSV_row), real_fmt='(F10.3)')
+
+        call fPixOut%add(g_tOutlet%EAct(iCSV_row), real_fmt='(F10.3)')
+        call fPixOut%add(g_tOutlet%W(iCSV_row), real_fmt='(F10.3)')
+        call fPixOut%add(g_tOutlet%SM(iCSV_row), real_fmt='(F10.3)')
+        call fPixOut%add(g_tOutlet%RS(iCSV_row), real_fmt='(F10.3)')
+
+        call fPixOut%add(g_tOutlet%RI(iCSV_row), real_fmt='(F10.3)')
+        call fPixOut%add(g_tOutlet%ExcS(iCSV_row), real_fmt='(F10.3)')
+        call fPixOut%add(g_tOutlet%ExcI(iCSV_row), real_fmt='(F10.3)')
+        call fPixOut%add(g_tOutlet%R(iCSV_row), real_fmt='(F10.3)')
+
+        call fPixOut%next_row()
+    end do
+    ! finished write CSV
+    call fPixOut%close(status_ok)
+        
+   
+
+    
+    return
+end subroutine OutputOutletValueToCSV   
+
+
+
+!#---------read and write state file---------------
+subroutine SaveStates(strDate, W0, SS0, SI0)
+    use CREST_Project
+    use CREST_Basic
+
+    implicit none
+    character*(*) :: strDate
+    logical :: bIsError
+    double precision :: W0(0:g_NCols-1,0:g_NRows-1)
+    double precision :: SS0(0:g_NCols-1,0:g_NRows-1)
+    double precision :: SI0(0:g_NCols-1,0:g_NRows-1)
+    double precision :: dblTemp(0:g_NCols-1,0:g_NRows-1)
+
+    ! Save the State Data
+    if(g_SaveState .eqv. .true.)then
+        where(g_Mask/=g_NoData_Value)
+            dblTemp=W0
+        elsewhere
+            dblTemp=g_NoData_Value
+        end where
+        call WriteMatrixFile(trim(g_StatePath) &
+                // "State_W0_"//trim(strDate),  &
+                dblTemp,g_NCols, g_NRows,g_XLLCorner,g_YLLCorner, &
+                g_CellSize,g_NoData_Value,bIsError,g_StateFormat)
+        
+
+
+        where(g_Mask/=g_NoData_Value)
+            dblTemp=SS0
+        elsewhere
+            dblTemp=g_NoData_Value
+        end where
+        call WriteMatrixFile(trim(g_StatePath)  &
+                // "State_SS0_"//trim(strDate), &
+                dblTemp,g_NCols, g_NRows,g_XLLCorner,g_YLLCorner, &
+                g_CellSize,g_NoData_Value,bIsError,g_StateFormat)
+
+        where(g_Mask/=g_NoData_Value)
+            dblTemp=SI0
+        elsewhere
+            dblTemp=g_NoData_Value
+        end where
+        call WriteMatrixFile(trim(g_StatePath) &
+                // "State_SI0_"//trim(strDate),  &
+                dblTemp,g_NCols, g_NRows,g_XLLCorner,g_YLLCorner,  &
+                g_CellSize,g_NoData_Value,bIsError,g_StateFormat)
+    end if
+
+    return
+end subroutine SaveStates
+
+
+
+subroutine LoadStates(WarmupDate_read, W0, SS0, SI0, bIsError)
+    
+    use CREST_Project
+    use CREST_Basic
+
+    implicit none
+    integer :: i, j 
+    character*(*), intent(in) :: WarmupDate_read
+    logical :: bIsError
+    double precision, intent(out) :: W0(0:g_NCols-1,0:g_NRows-1)
+    double precision, intent(out) :: SS0(0:g_NCols-1,0:g_NRows-1)
+    double precision, intent(out) :: SI0(0:g_NCols-1,0:g_NRows-1)
+
+    call ReadMatrixFile(trim(g_StatePath) // "State_W0_"//trim(WarmupDate_read), &
+                W0, g_NCols, g_NRows,g_XLLCorner,g_YLLCorner, &
+                g_CellSize,g_NoData_Value,bIsError,g_StateFormat,"")
+
+    
+    if(bIsError .eqv. .true.)then ! File does not exist!
+        print *, 'Error: can not load W0 State as: ', trim(g_StatePath) // &
+                    "State_W0_"//trim(WarmupDate_read) // '(file does not exist)'
+        stop 1
+    end if
+
+    
+    call ReadMatrixFile(trim(g_StatePath) // "State_SS0_"//trim(WarmupDate_read), &
+                SS0,g_NCols, g_NRows,g_XLLCorner,g_YLLCorner,  &
+                g_CellSize,g_NoData_Value,bIsError,g_StateFormat,"")
+
+    if(bIsError .eqv. .true.)then ! File does not exist!
+        print *, 'Error: can not load SS0 State as: ', trim(g_StatePath) // &
+                    "State_SS0_"//trim(WarmupDate_read) // '(file does not exist)'
+        stop 1
+    end if
+
+    
+    call ReadMatrixFile(trim(g_StatePath) // "State_SI0_"//trim(WarmupDate_read), &
+                SI0,g_NCols, g_NRows,g_XLLCorner,g_YLLCorner, &
+                g_CellSize,g_NoData_Value,bIsError,g_StateFormat,"")
+    
+    if(bIsError .eqv. .true.)then ! File does not exist!
+        print *, 'Error: can not load SI0 State as: ', trim(g_StatePath) // &
+                    "State_SI0_"//trim(WarmupDate_read) // '(file does not exist)'
+        stop 1
+    end if
+
+    bIsError=.false.
+    return
+    
+end subroutine LoadStates
+!########################################################
+
+
+
+
+!########################################################
+subroutine XXWGetFreeFile(fileID)
+    implicit none
+    integer::i,fileID
+    logical::bOpen
+    bOpen = .TRUE.
+
+    do i = 15, 100000
+        inquire(UNIT=i, OPENED=bOpen)
+        if (.NOT. bOpen) then
+            fileID = i
+            return
+        end if
+    end do
+    fileID = -1
+end subroutine XXWGetFreeFile
+!########################################################
 
